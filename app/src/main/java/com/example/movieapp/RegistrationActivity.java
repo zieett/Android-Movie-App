@@ -10,17 +10,22 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.movieapp.model.Movie;
+import com.example.movieapp.model.OrderHistory;
 import com.example.movieapp.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
@@ -36,11 +41,12 @@ import kotlin.UShort;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    private EditText emailTextView, passwordTextView;
+    private EditText emailTextView, passwordTextView,address,confirmPassword,name;
     private Button Btn;
     private ProgressBar progressbar;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private String gender;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -53,12 +59,30 @@ public class RegistrationActivity extends AppCompatActivity {
         // initialising all views through id defined above
         emailTextView = findViewById(R.id.email);
         passwordTextView = findViewById(R.id.passwd);
+        address = findViewById(R.id.signUpAddress);
+        confirmPassword = findViewById(R.id.confirmPassword);
+        name = findViewById(R.id.signUpName);
         Btn = findViewById(R.id.btnregister);
         progressbar = findViewById(R.id.progressbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        // Set on Click Listener on Registration button
-        Btn.setOnClickListener(new View.OnClickListener() {
+        Spinner dropdown = findViewById(R.id.spinner1);
+        String[] items = new String[]{"Male", "Female","Other"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        dropdown.setAdapter(adapter);
+        dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                gender = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+                Btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
@@ -69,15 +93,12 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void registerNewUser()
     {
-
-        // show the visibility of progress bar to show loading
-        progressbar.setVisibility(View.VISIBLE);
-
-        // Take the value of two edit texts in Strings
-        String email, password;
+        String email, password,confirmPass,addressString,myName;
         email = emailTextView.getText().toString();
         password = passwordTextView.getText().toString();
-
+        confirmPass = confirmPassword.getText().toString();
+        addressString = address.getText().toString();
+        myName = name.getText().toString();
         // Validations for input email and password
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(),
@@ -93,7 +114,20 @@ public class RegistrationActivity extends AppCompatActivity {
                     .show();
             return;
         }
-
+        if(!confirmPass.equals(password)){
+            Toast.makeText(getApplicationContext(),
+                            "Your confirm password not correct!!",
+                            Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+        if(myName.isEmpty()){
+            Toast.makeText(getApplicationContext(),
+                            "Please enter your name",
+                            Toast.LENGTH_LONG)
+                    .show();
+        }
+        progressbar.setVisibility(View.VISIBLE);
         // create new user or register new user
         mAuth
                 .createUserWithEmailAndPassword(email, password)
@@ -105,7 +139,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                            User user = new User(email,new ArrayList<Movie>(),new ArrayList<Movie>());
+                            User user = new User(email,new ArrayList<Movie>(),new ArrayList<Movie>(),myName,addressString,gender,new ArrayList<OrderHistory>());
                             db.collection("Users").document(uid).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {

@@ -36,7 +36,7 @@ public class MoviesFragment extends Fragment {
     private FirebaseFirestore db;
     private RecyclerView recyclerView;
     private FragmentMoviesBinding binding;
-    private FirestoreRecyclerAdapter adapter;
+    private FireStoreMovieAdapter adapter;
     private MenuItem menuItem;
     private SearchView searchView;
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -48,23 +48,6 @@ public class MoviesFragment extends Fragment {
         FirestoreRecyclerOptions<Movie> options = new FirestoreRecyclerOptions.Builder<Movie>()
                 .setQuery(quey.orderBy("original_title"),Movie.class).build();
         adapter = new FireStoreMovieAdapter(options,getActivity());
-//        adapter = new FirestoreRecyclerAdapter<Movie,MovieViewHolder>(options){
-//            @Override
-//            protected void onBindViewHolder(@NonNull MovieViewHolder holder, int position, @NonNull Movie model) {
-////                Movie movie = moviesList.get(position);
-//                holder.movieTitle.setText(model.getTitle());
-//                holder.movieScore.setText(String.valueOf(model.getVote_average()));
-//                Picasso.get().load("https://image.tmdb.org/t/p/w200" + model.poster_path).fit().into(holder.movieImage);
-//            }
-//
-//            @NonNull
-//            @Override
-//            public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//                View itemView = LayoutInflater.from(parent.getContext())
-//                        .inflate(R.layout.movies_list, parent, false);
-//                return new MovieViewHolder(itemView);
-//            }
-//        };
         recyclerView = binding.moviesLayout;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
@@ -75,6 +58,9 @@ public class MoviesFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+        if(adapter != null){
+            adapter.release();
+        }
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,5 +111,12 @@ public class MoviesFragment extends Fragment {
     public void onStart() {
         super.onStart();
         adapter.startListening();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(adapter != null){
+            adapter.release();
+        }
     }
 }

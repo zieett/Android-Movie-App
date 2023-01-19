@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.example.movieapp.adapter.CastAdapter;
 import com.example.movieapp.adapter.MoviesAdapter;
@@ -25,6 +28,10 @@ import com.example.movieapp.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -38,11 +45,14 @@ import com.squareup.picasso.Picasso;
 import org.checkerframework.checker.units.qual.A;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class MovieDetailActivity extends AppCompatActivity {
+public class MovieDetailActivity extends YouTubeBaseActivity {
     private ActivityMovieDetailBinding binding;
     private CastAdapter mAdapter;
     private ArrayList<Cast> castList = new ArrayList<>();
@@ -52,14 +62,46 @@ public class MovieDetailActivity extends AppCompatActivity {
     private FirebaseUser user;
     private FirebaseAuth mAuth;
     private static final DecimalFormat df = new DecimalFormat("0.0");
-
+    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private String api_key = "AIzaSyCoUk77AN_K-TRxrtj7GHGDNUzN1b9sV94";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMovieDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+//        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setHomeButtonEnabled(true);
+        YouTubePlayerView ytPlayer = (YouTubePlayerView)findViewById(R.id.castBigImage);
+        ytPlayer.initialize(
+                api_key,
+                new YouTubePlayer.OnInitializedListener() {
+                    // Implement two methods by clicking on red
+                    // error bulb inside onInitializationSuccess
+                    // method add the video link or the playlist
+                    // link that you want to play In here we
+                    // also handle the play and pause
+                    // functionality
+                    @Override
+                    public void onInitializationSuccess(
+                            YouTubePlayer.Provider provider,
+                            YouTubePlayer youTubePlayer, boolean b)
+                    {
+                        youTubePlayer.loadVideo(movie.getVideo_id());
+                        youTubePlayer.play();
+                    }
+
+                    // Inside onInitializationFailure
+                    // implement the failure functionality
+                    // Here we will show toast
+                    @Override
+                    public void onInitializationFailure(YouTubePlayer.Provider provider,
+                                                        YouTubeInitializationResult
+                                                                youTubeInitializationResult)
+                    {
+                        Toast.makeText(getApplicationContext(), "Video player Failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        binding.actionbartitle.setOnClickListener(e -> finish());
         Bundle bundle = getIntent().getExtras();
         if (bundle == null) return;
         firebaseFirestore = FirebaseFirestore.getInstance();
@@ -67,7 +109,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         movie = (Movie) bundle.get("movie");
         ratingBar = binding.ratingBar;
-        Picasso.get().load("https://image.tmdb.org/t/p/original" + movie.backdrop_path).fit().into(binding.castBigImage);
+//        VideoView videoView = findViewById(R.id.castBigImage); //id in your xml file
+//        videoView.setVideoURI(Uri.parse("https://www.youtube.com/watch?v="+ movie.getVideo_id())); //the string of the URL mentioned above
+//        videoView.start();
+//        Picasso.get().load("https://image.tmdb.org/t/p/original" + movie.backdrop_path).fit().into(binding.castBigImage);
         binding.movieDetailTitle.setText(movie.getTitle());
         binding.movieDetailInfo.setText(movie.getRelease_date().split("-")[0] + " " + movie.getTime());
         Picasso.get().load("https://image.tmdb.org/t/p/w200" + movie.poster_path).fit().into(binding.movieDetailImage);
@@ -76,9 +121,17 @@ public class MovieDetailActivity extends AppCompatActivity {
         binding.movieDetailScore.setText(df.format(movie.getVote_average()));
         ratingBar.setRating((float) movie.getVote_average());
         binding.addToWatchList.setOnClickListener(e -> {
-            update("wishlist","wistlist");
+            update("wishlist", "wistlist");
         });
-        binding.buyButton.setOnClickListener(e-> update("cart","cart"));
+        if (LocalDate.now().isBefore(LocalDate.parse(movie.getRelease_date(), dateTimeFormatter).plusMonths(7))) {
+            binding.notAvaiableButtton.setVisibility(View.VISIBLE);
+            binding.buyButton.setVisibility(View.INVISIBLE);
+        } else {
+            binding.notAvaiableButtton.setVisibility(View.INVISIBLE);
+            binding.buyButton.setVisibility(View.VISIBLE);
+        }
+
+        binding.buyButton.setOnClickListener(e -> update("cart", "cart"));
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
@@ -112,7 +165,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     }
 
-    private void update(String field,String msg){
+    private void update(String field, String msg) {
         firebaseFirestore.collection("Users")
                 .document(user.getUid())
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -121,10 +174,19 @@ public class MovieDetailActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             User newUser = task.getResult().toObject(User.class);
                             System.out.println(newUser.toString());
-                            for (Movie userMovie : newUser.getWishlist()) {
-                                if (userMovie.getOriginal_title().equals(movie.getOriginal_title())) {
-                                    Toast.makeText(MovieDetailActivity.this, "This movie is already on your " + msg, Toast.LENGTH_SHORT).show();
-                                    return;
+                            if (field.equals("wishlist")) {
+                                for (Movie userMovie : newUser.getWishlist()) {
+                                    if (userMovie.getOriginal_title().equals(movie.getOriginal_title())) {
+                                        Toast.makeText(MovieDetailActivity.this, "This movie is already on your " + msg, Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                }
+                            } else {
+                                for (Movie userMovie : newUser.getCart()) {
+                                    if (userMovie.getOriginal_title().equals(movie.getOriginal_title())) {
+                                        Toast.makeText(MovieDetailActivity.this, "This movie is already on your " + msg, Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
                                 }
                             }
                             firebaseFirestore.collection("Users")
@@ -146,7 +208,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                 });
     }
 
-        ;
+    ;
 //        firebaseFirestore.collection("User")
 //                .whereEqualTo("email",user.getEmail())
 //                .get()

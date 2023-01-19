@@ -86,6 +86,7 @@ public class WishlistFragment extends Fragment {
                                                if (task.isSuccessful()) {
                                                    if (task.getResult() != null) {
                                                        User user = task.getResult().toObject(User.class);
+                                                       binding.wishlistProgressBar.setVisibility(View.INVISIBLE);
                                                        for (int i = 0; i < user.getWishlist().size(); i++) {
                                                            movieList.add(user.getWishlist().get(i));
                                                        }
@@ -120,5 +121,12 @@ public class WishlistFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mAdapter != null){
+            mAdapter.release();
+        }
     }
 }

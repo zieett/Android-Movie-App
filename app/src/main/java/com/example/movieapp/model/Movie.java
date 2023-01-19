@@ -29,6 +29,15 @@ public class Movie implements Serializable{
     public String time;
     public String video_id;
     public ArrayList<Cast> cast;
+    public String price;
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
 
     public boolean isAdult() {
         return adult;
@@ -166,7 +175,7 @@ public class Movie implements Serializable{
         this.cast = cast;
     }
 
-    public Movie(boolean adult, String backdrop_path, ArrayList<String> genre_ids, int id, String original_language, String original_title, String overview, double popularity, String poster_path, String release_date, String title, boolean video, float vote_average, int vote_count, String time, String video_id, ArrayList<Cast> cast) {
+    public Movie(boolean adult, String backdrop_path, ArrayList<String> genre_ids, int id, String original_language, String original_title, String overview, double popularity, String poster_path, String release_date, String title, boolean video, float vote_average, int vote_count, String time, String video_id, ArrayList<Cast> cast, String price) {
         this.adult = adult;
         this.backdrop_path = backdrop_path;
         this.genre_ids = genre_ids;
@@ -184,6 +193,7 @@ public class Movie implements Serializable{
         this.time = time;
         this.video_id = video_id;
         this.cast = cast;
+        this.price = price;
     }
 }
 

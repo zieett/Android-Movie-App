@@ -1,6 +1,7 @@
 package com.example.movieapp.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,21 +12,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.movieapp.MovieDetailActivity;
 import com.example.movieapp.R;
 import com.example.movieapp.model.Movie;
-import com.example.movieapp.ui.movies.MoviesFragment;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
-import java.util.List;
 
 public class FireStoreMovieAdapter extends FirestoreRecyclerAdapter<Movie, FireStoreMovieAdapter.MovieViewHolder> {
     private Context mContext;
+    private FirebaseUser user;
+    private FirebaseFirestore firebaseFirestore;
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
      * FirestoreRecyclerOptions} for configuration options.
@@ -35,12 +40,11 @@ public class FireStoreMovieAdapter extends FirestoreRecyclerAdapter<Movie, FireS
     public FireStoreMovieAdapter(@NonNull FirestoreRecyclerOptions<Movie> options,Context context) {
         super(options);
         this.mContext = context;
-
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
     }
-
     @Override
     protected void onBindViewHolder(@NonNull MovieViewHolder holder, int position, @NonNull Movie model) {
-//        Movie movie = moviesList.get(position);
         DecimalFormat df = new DecimalFormat("0.0");
         holder.movieTitle.setText(model.getTitle());
         holder.movieInfo.setText(df.format(model.getVote_average()) + " ");
@@ -52,6 +56,24 @@ public class FireStoreMovieAdapter extends FirestoreRecyclerAdapter<Movie, FireS
                 goToMovieDetail(model);
             }
         });
+        if(user.getEmail().equals("admin@gmail.com")){
+            holder.deleteButton.setOnClickListener(v -> deleteMovie(position));
+            return;
+        }
+        holder.deleteButton.setVisibility(ImageView.INVISIBLE);
+    }
+    private AlertDialog deleteMovie(int position){
+        return new AlertDialog.Builder(mContext)
+                .setMessage("Are you sure, you want to delete this movie?")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                getSnapshots().getSnapshot(position).getReference().delete();
+                            }
+                        }
+                ).setNegativeButton("Cancel", null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
     private void goToMovieDetail(Movie movie){
         Intent intent = new Intent(mContext, MovieDetailActivity.class);
@@ -73,15 +95,16 @@ public class FireStoreMovieAdapter extends FirestoreRecyclerAdapter<Movie, FireS
     }
     class MovieViewHolder extends RecyclerView.ViewHolder {
         TextView movieTitle,movieInfo,movieDateAndTime;
-        ImageView movieImage;
+        ImageView movieImage,deleteButton;
         RelativeLayout layout_movie;
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
-            layout_movie = itemView.findViewById(R.id.layout_movie2);
+            layout_movie = itemView.findViewById(R.id.layout_movie3);
             movieTitle = itemView.findViewById(R.id.movieLayout2Title);
             movieImage = itemView.findViewById(R.id.movieLayout2Image);
             movieInfo = itemView.findViewById(R.id.movieLayout2Info);
             movieDateAndTime = itemView.findViewById(R.id.movieLayout2DateAndTIme);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 }

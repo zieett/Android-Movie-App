@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    android:layout_margin="8dp">
+
+    <RelativeLayout
+        android:id="@+id/layout_movie3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="10dp"
+        android:padding="0dp">
+
+        <ImageView
+            android:id="@+id/cartMovieImage"
+            android:layout_width="150dp"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/cartMovieTitle"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="23dp"
+            android:layout_marginTop="33dp"
+            android:layout_toEndOf="@+id/cartMovieImage" />
+
+        <TextView
+            android:id="@+id/cartMoviePrice"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/cartMovieTitle"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="29dp"
+            android:layout_toEndOf="@+id/cartMovieImage" />
+
+        <ImageView
+            android:id="@+id/cartMovieDeleteButton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="5dp"
+            app:srcCompat="@android:drawable/ic_delete" />
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

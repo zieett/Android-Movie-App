@@ -55,6 +55,11 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'com.squareup.picasso:picasso:2.8'
     implementation 'com.firebaseui:firebase-ui-firestore:8.0.2'
+    implementation 'com.firebaseui:firebase-ui-database:8.0.2'
+    implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
+    implementation 'com.firebaseui:firebase-ui-storage:8.0.2'
+    implementation files('libs/YouTubeAndroidPlayerApi.jar')
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
 }
 apply plugin: 'com.google.gms.google-services'

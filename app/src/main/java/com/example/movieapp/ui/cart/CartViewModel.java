@@ -4,13 +4,18 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.movieapp.model.Movie;
+
+import java.util.List;
+
 public class CartViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
+    private final MutableLiveData<List<Movie>> cart;
 
     public CartViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is notifications fragment");
+        cart = new MutableLiveData<>();
     }
 
     public LiveData<String> getText() {

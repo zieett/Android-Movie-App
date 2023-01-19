@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,66 +16,67 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.movieapp.MainActivity;
 import com.example.movieapp.MovieDetailActivity;
 import com.example.movieapp.R;
 import com.example.movieapp.model.Movie;
-import com.example.movieapp.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Objects;
 
-public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHolder> implements View.OnClickListener {
+public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder> implements View.OnClickListener {
     private List<Movie> moviesList;
     private Context mContext;
+    private FirebaseUser user;
+    private FirebaseFirestore firebaseFirestore;
+    private HandleItemClick clickListener;
     @Override
     public void onClick(View v) {
 
     }
-
     class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView movieTitle,movieScore;
-        ImageView movieImage;
+        TextView cartMovieTitle,cartMoviePrice;
+        ImageView movieImage,deleteButton;
         RelativeLayout layout_movie;
-        MyViewHolder(View view) {
-            super(view);
-            layout_movie = view.findViewById(R.id.layout_movie);
-            movieTitle = view.findViewById(R.id.movieTitle);
-            movieImage = view.findViewById(R.id.movieImage);
-            movieScore = view.findViewById(R.id.movieScore);
+        public MyViewHolder(@NonNull View itemView) {
+            super(itemView);
+            layout_movie = itemView.findViewById(R.id.layout_movie3);
+            cartMovieTitle = itemView.findViewById(R.id.cartMovieTitle);
+            movieImage = itemView.findViewById(R.id.cartMovieImage);
+            cartMoviePrice = itemView.findViewById(R.id.cartMoviePrice);
+            deleteButton = itemView.findViewById(R.id.cartMovieDeleteButton);
         }
     }
-    public MoviesAdapter(Context context,List<Movie> moviesList) {
+    public CartAdapter(Context context,List<Movie> moviesList,HandleItemClick clickListener) {
         this.moviesList = moviesList;
         this.mContext = context;
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        this.clickListener = clickListener;
     }
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.movies_list, parent, false);
+                .inflate(R.layout.movie_cart_layout, parent, false);
         return new MyViewHolder(itemView);
     }
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         DecimalFormat df = new DecimalFormat("0.0");
         Movie movie = moviesList.get(position);
-        holder.movieTitle.setText(movie.getTitle());
-        holder.movieScore.setText(df.format(movie.getVote_average()));
+        holder.cartMovieTitle.setText(movie.getTitle());
+        holder.cartMoviePrice.setText(movie.getPrice() + " $");
         Picasso.get().load("https://image.tmdb.org/t/p/w200" + movie.poster_path).fit().into(holder.movieImage);
-        holder.layout_movie.setOnClickListener(new View.OnClickListener() {
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToMovieDetail(movie);
+                clickListener.itemClick(movie,position);
             }
         });
     }
@@ -94,6 +94,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
 
     public void release(){
         mContext = null;
+    }
+    public interface  HandleItemClick {
+        void itemClick(Movie movie,int position);
+        void removeItem(Movie movie);
+        void editItem(Movie movie);
     }
 
 }

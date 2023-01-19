@@ -6,7 +6,7 @@
     android:layout_margin="8dp">
 
     <RelativeLayout
-        android:id="@+id/layout_movie2"
+        android:id="@+id/layout_movie3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="0dp">
@@ -64,6 +64,16 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/deleteButton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="128dp"
+            app:srcCompat="@android:drawable/ic_delete" />
 
 
     </RelativeLayout>
