@@ -58,6 +58,10 @@ public class UserInformationActivity extends AppCompatActivity {
             intent.putExtras(bundle);
             startActivityForResult(intent,1);
         });
+        binding.orderHistoryButton.setOnClickListener(e ->{
+            Intent intent = new Intent(this,OrderHistoryActivity.class);
+            startActivity(intent);
+        });
         prepareUserData();
     }
 

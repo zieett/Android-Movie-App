@@ -101,4 +101,12 @@ public class User implements Serializable {
     public void setCart(List<Movie> cart) {
         this.cart = cart;
     }
+
+    public List<OrderHistory> getOrderHistory() {
+        return orderHistory;
+    }
+
+    public void setOrderHistory(List<OrderHistory> orderHistory) {
+        this.orderHistory = orderHistory;
+    }
 }

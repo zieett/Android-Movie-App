@@ -71,6 +71,7 @@ public class WishlistFragment extends Fragment {
             recyclerView.setAdapter(mAdapter);
             prepareMovieWishList();
         } else {
+            binding.wishlistProgressBar.setVisibility(View.INVISIBLE);
             binding.wishlistText.setText("Please login to view your wishlist");
         }
         return root;

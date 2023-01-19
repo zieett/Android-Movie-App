@@ -10,6 +10,22 @@ public class OrderHistory implements Serializable {
     private List<Movie> order;
     private String totalAmount;
     private String date;
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public OrderHistory(List<Movie> order, String totalAmount, String date, String status) {
+        this.order = order;
+        this.totalAmount = totalAmount;
+        this.date = date;
+        this.status = status;
+    }
 
     public OrderHistory(){
         order = new ArrayList<>();

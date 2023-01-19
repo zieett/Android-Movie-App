@@ -97,6 +97,7 @@ public class CartFragment extends Fragment implements CartAdapter.HandleItemClic
             binding.cartBuyButton.setVisibility(View.INVISIBLE);
             binding.cartTotal.setVisibility(View.INVISIBLE);
             binding.cartNumItem.setVisibility(View.INVISIBLE);
+            binding.cartProgressBar.setVisibility(View.INVISIBLE);
         }
         return root;
     }
@@ -104,6 +105,7 @@ public class CartFragment extends Fragment implements CartAdapter.HandleItemClic
     @Override
     public void onResume() {
         super.onResume();
+        if(user !=null){
         binding.cartLayout.setVisibility(View.INVISIBLE);
         binding.cartProgressBar.setVisibility(View.VISIBLE);
         binding.cartCheckOutText.setVisibility(View.INVISIBLE);
@@ -112,6 +114,7 @@ public class CartFragment extends Fragment implements CartAdapter.HandleItemClic
         binding.cartTotal.setVisibility(View.INVISIBLE);
         binding.cartNumItem.setVisibility(View.INVISIBLE);
         prepareCartList();
+        }
     }
 
     private void prepareCartList() {
@@ -162,34 +165,6 @@ public class CartFragment extends Fragment implements CartAdapter.HandleItemClic
                                        }
                 );
     }
-
-
-
-    public void delete(int position){
-        cart.remove(position);
-        new AlertDialog.Builder(getActivity())
-                .setMessage("Are you sure to remove this movie from your cart?")
-                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                FirebaseFirestore.getInstance().collection("Users")
-                                        .document(user.getUid()).update("cart",cart).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    Toast.makeText(getActivity(), "Remove Successfully", Toast.LENGTH_SHORT).show();
-                                                } else {
-                                                    Toast.makeText(getActivity(), "Failed to delete", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
-                            }
-                        }
-                ).setNegativeButton("Cancel", null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();

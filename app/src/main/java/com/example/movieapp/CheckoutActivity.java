@@ -92,13 +92,14 @@ public class CheckoutActivity extends AppCompatActivity {
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    DateTimeFormatter df = DateTimeFormatter.ofPattern("dd-mm-yyyy");
-                                    OrderHistory orderHistory = new OrderHistory(cart,String.valueOf(totalAmount), LocalDateTime.now().format(df));
+                                    DateTimeFormatter df = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                                    OrderHistory orderHistory = new OrderHistory(cart,String.valueOf(totalAmount), LocalDateTime.now().format(df),"Shipping");
                                     FirebaseFirestore.getInstance().collection("Users")
                                             .document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser().getUid()))
                                             .update("orderHistory", FieldValue.arrayUnion(orderHistory),"cart",new ArrayList<>())
                                             .addOnCompleteListener(task -> {
                                                         if (task.isSuccessful()) {
+                                                            Toast.makeText(CheckoutActivity.this, "Payment successfully, check order history for shipment status, Thank you!", Toast.LENGTH_SHORT).show();
                                                             Intent returnIntent = new Intent();
                                                             setResult(Activity.RESULT_OK,returnIntent);
                                                             finish();

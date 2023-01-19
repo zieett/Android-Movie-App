@@ -30,7 +30,6 @@ import java.text.DecimalFormat;
 public class FireStoreMovieAdapter extends FirestoreRecyclerAdapter<Movie, FireStoreMovieAdapter.MovieViewHolder> {
     private Context mContext;
     private FirebaseUser user;
-    private FirebaseFirestore firebaseFirestore;
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
      * FirestoreRecyclerOptions} for configuration options.
@@ -40,7 +39,6 @@ public class FireStoreMovieAdapter extends FirestoreRecyclerAdapter<Movie, FireS
     public FireStoreMovieAdapter(@NonNull FirestoreRecyclerOptions<Movie> options,Context context) {
         super(options);
         this.mContext = context;
-        firebaseFirestore = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
     }
     @Override
@@ -56,11 +54,12 @@ public class FireStoreMovieAdapter extends FirestoreRecyclerAdapter<Movie, FireS
                 goToMovieDetail(model);
             }
         });
-        if(user.getEmail().equals("admin@gmail.com")){
-            holder.deleteButton.setOnClickListener(v -> deleteMovie(position));
-            return;
-        }
         holder.deleteButton.setVisibility(ImageView.INVISIBLE);
+        if(user == null ) return;
+        if(user.getEmail().equals("admin@gmail.com")){
+            holder.deleteButton.setVisibility(ImageView.VISIBLE);
+            holder.deleteButton.setOnClickListener(v -> deleteMovie(position));
+        }
     }
     private AlertDialog deleteMovie(int position){
         return new AlertDialog.Builder(mContext)

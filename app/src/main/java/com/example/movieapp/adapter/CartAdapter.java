@@ -32,9 +32,8 @@ import java.util.List;
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder> implements View.OnClickListener {
     private List<Movie> moviesList;
     private Context mContext;
-    private FirebaseUser user;
-    private FirebaseFirestore firebaseFirestore;
     private HandleItemClick clickListener;
+    private boolean isOrderDetail;
     @Override
     public void onClick(View v) {
 
@@ -55,9 +54,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder> 
     public CartAdapter(Context context,List<Movie> moviesList,HandleItemClick clickListener) {
         this.moviesList = moviesList;
         this.mContext = context;
-        firebaseFirestore = FirebaseFirestore.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
         this.clickListener = clickListener;
+        this.isOrderDetail = false;
+    }
+    public CartAdapter(List<Movie> moviesList){
+        this.moviesList = moviesList;
+        isOrderDetail = true;
     }
     @NonNull
     @Override
@@ -73,19 +75,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder> 
         holder.cartMovieTitle.setText(movie.getTitle());
         holder.cartMoviePrice.setText(movie.getPrice() + " $");
         Picasso.get().load("https://image.tmdb.org/t/p/w200" + movie.poster_path).fit().into(holder.movieImage);
+        if(isOrderDetail) {
+            holder.deleteButton.setVisibility(View.INVISIBLE);
+            return;
+        }
+        holder.deleteButton.setVisibility(View.VISIBLE);
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clickListener.itemClick(movie,position);
             }
         });
-    }
-    private void goToMovieDetail(Movie movie){
-        Intent intent = new Intent(mContext, MovieDetailActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("movie",movie);
-        intent.putExtras(bundle);
-        mContext.startActivity(intent);
     }
     @Override
     public int getItemCount() {
