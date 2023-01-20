@@ -3,8 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
-    android:layout_margin="8dp">
+    android:layout_height="200dp"
+    android:layout_margin="8dp"
+    android:background="@drawable/shadow_bg"
+    app:cardCornerRadius="10dp">
 
     <RelativeLayout
         android:id="@+id/layout_movie3"
@@ -26,7 +28,9 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="23dp"
             android:layout_marginTop="33dp"
-            android:layout_toEndOf="@+id/cartMovieImage" />
+            android:layout_toEndOf="@+id/cartMovieImage"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/cartMoviePrice"

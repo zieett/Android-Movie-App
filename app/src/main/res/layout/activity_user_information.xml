@@ -115,6 +115,7 @@
         android:layout_marginBottom="388dp"
         android:text="Username"
         android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.138"
@@ -126,6 +127,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="52dp"
         android:text="Email"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userNameText"
@@ -138,6 +140,7 @@
         android:layout_marginStart="52dp"
         android:layout_marginTop="56dp"
         android:text="Gender"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userEmailText" />
 
@@ -148,6 +151,7 @@
         android:layout_marginStart="52dp"
         android:layout_marginTop="52dp"
         android:text="Address"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userGenderText" />
 

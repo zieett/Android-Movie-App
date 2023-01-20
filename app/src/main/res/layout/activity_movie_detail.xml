@@ -12,9 +12,10 @@
         android:maxLines="1"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:background="@color/pink"
         android:paddingStart="@dimen/activity_horizontal_margin"
         android:paddingEnd="@dimen/activity_horizontal_margin"
-        android:text="Go Back"
+        android:text="Movie Detail"
         android:gravity="center_vertical"
         android:drawableLeft="@drawable/ic_baseline_arrow_back_24"
         android:textColor="@android:color/white"
@@ -141,9 +142,12 @@
                 android:layout_height="20dp"
                 android:layout_marginStart="96dp"
                 android:layout_marginTop="12dp"
+                android:contentDescription="123"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/addToWatchList"
-                app:srcCompat="@android:drawable/btn_star_big_on" />
+                app:srcCompat="@android:drawable/btn_star_big_on"
+                tools:srcCompat="@android:drawable/btn_star_big_on"
+                android:background="@android:drawable/btn_star_big_on"/>
 
             <!--            <ImageView-->
             <!--                android:id="@+id/imageView4"-->
@@ -163,7 +167,7 @@
                 android:layout_marginEnd="40dp"
                 android:isIndicator="false"
                 android:numStars="10"
-                android:progressTint="#FFFF00"
+                android:progressTint="@color/pink"
                 android:stepSize="0.1"
                 app:layout_constraintBottom_toTopOf="@+id/movieDetailTopCast"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -209,6 +213,7 @@
                 android:paddingBottom="0dp"
                 android:text="Buy"
                 android:textSize="10dp"
+                android:textColor="@color/white"
                 app:layout_constraintBottom_toTopOf="@+id/addToWatchList"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.08"
